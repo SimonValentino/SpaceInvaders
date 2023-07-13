@@ -3,7 +3,11 @@ import pygame
 
 pygame.init()
 
-screen = pygame.display.set_mode((800, 800))
+
+pygame.display.set_caption("Space Invaders")
+pygame.display.set_icon(pygame.image.load("space_invaders_icon.png"))
+screen = pygame.display.set_mode((800, 800), pygame.RESIZABLE)
+
 
 run_game = True
 while run_game:
