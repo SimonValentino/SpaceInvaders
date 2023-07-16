@@ -9,8 +9,11 @@ class __Entity:
     def display(self, screen):
         screen.blit(self.img, (self.x, self.y))
 
-    def in_bounds(self):
-        return self.x >= consts.RIGHT_BOUND or self.x <= consts.LEFT_BOUND
+    def in_left_bound(self):
+        return self.x >= consts.LEFT_BOUND
+
+    def in_right_bound(self):
+        return self.x <= consts.RIGHT_BOUND
 
 
 class Alien(__Entity):
