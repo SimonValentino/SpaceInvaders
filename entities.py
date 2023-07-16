@@ -1,5 +1,4 @@
 import constants as consts
-from game import screen
 
 
 class __Entity:
@@ -7,7 +6,7 @@ class __Entity:
         self.img = img
         self.x, self.y = coordinates
 
-    def display(self):
+    def display(self, screen):
         screen.blit(self.img, (self.x, self.y))
 
     def in_bounds(self):

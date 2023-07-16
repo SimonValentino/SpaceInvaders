@@ -58,7 +58,7 @@ while run_game:
         elif move_left:
             player.move_left()
 
-    player.display()
+    player.display(screen)
 
     pygame.display.update()
 
