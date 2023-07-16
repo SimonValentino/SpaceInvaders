@@ -1,12 +1,14 @@
 import pygame
 import constants as consts
 
+
 def draw_player(x, y):
     screen.blit(defender, (x, y))
 
+
 pygame.init()
 
-screen = pygame.display.set_mode(consts.INITIAL_SCREEN_SIZE)
+screen = pygame.display.set_mode(consts.SCREEN_SIZE)
 
 # Initialize the display
 pygame.display.set_caption("Space Invaders")
@@ -20,6 +22,8 @@ player_x, player_y = consts.INITIAL_PLAYER_COORDINATES
 move_left = False
 move_right = False
 
+clock = pygame.time.Clock()
+
 run_game = True
 while run_game:
     screen.fill(consts.INITIAL_SCREEN_COLOR)
@@ -29,24 +33,26 @@ while run_game:
             run_game = False
 
         # Key is pressed down
-        if event.type == pygame.KEYDOWN:
+        elif event.type == pygame.KEYDOWN:
             if event.key == pygame.K_RIGHT:
                 move_right = True
             elif event.key == pygame.K_LEFT:
                 move_left = True
 
         # Key is released
-        if event.type == pygame.KEYUP:
+        elif event.type == pygame.KEYUP:
             if event.key == pygame.K_RIGHT:
                 move_right = False
             elif event.key == pygame.K_LEFT:
                 move_left = False
 
     # Update player position based on movement flags
-    if move_right:
+    if move_right and player_x <= consts.RIGHT_BOUND:
         player_x += consts.PLAYER_SPEED
-    if move_left:
+    elif move_left and player_x >= consts.LEFT_BOUND:
         player_x -= consts.PLAYER_SPEED
 
     draw_player(player_x, player_y)
     pygame.display.update()
+
+    clock.tick(consts.FPS)
