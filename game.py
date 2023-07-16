@@ -52,11 +52,10 @@ while run_game:
                 move_left = False
 
     # Update player position based on movement flags
-    if player.in_bounds():
-        if move_right:
-            player.move_right()
-        elif move_left:
-            player.move_left()
+    if move_right and player.in_right_bound():
+        player.move_right()
+    elif move_left and player.in_left_bound():
+        player.move_left()
 
     player.display(screen)
 
