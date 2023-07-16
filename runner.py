@@ -8,14 +8,20 @@ def draw_player(x, y):
 
 pygame.init()
 
-screen = pygame.display.set_mode(consts.SCREEN_SIZE)
+# Assets
+defender = pygame.image.load("assets/defender.png")
+alien1 = pygame.image.load("assets/alien1.png")
+alien2 = pygame.image.load("assets/alien2.png")
+alien3 = pygame.image.load("assets/alien3.png")
+alien4 = pygame.image.load("assets/alien4.png")
+game_logo = pygame.image.load("assets/game_logo.png")
 
 # Initialize the display
+screen = pygame.display.set_mode(consts.SCREEN_SIZE)
 pygame.display.set_caption("Space Invaders")
-pygame.display.set_icon(pygame.image.load("assets/game_logo.png"))
+pygame.display.set_icon(game_logo)
 
-# Create player defender
-defender = pygame.image.load("assets/defender.png")
+# Set characters coordinates
 player_x, player_y = consts.INITIAL_PLAYER_COORDINATES
 
 # Define movement flags
