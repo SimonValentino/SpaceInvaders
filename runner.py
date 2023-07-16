@@ -4,7 +4,7 @@ import constants as consts
 
 def init_disp():
     pygame.display.set_caption("Space Invaders")
-    pygame.display.set_icon(pygame.image.load("assets/space_invaders_icon.png"))
+    pygame.display.set_icon(pygame.image.load("assets/game_logo.png"))
 
 
 pygame.init()
