@@ -19,7 +19,16 @@ screen = pygame.display.set_mode(consts.SCREEN_SIZE)
 pygame.display.set_caption("Space Invaders")
 pygame.display.set_icon(game_logo)
 
-# Define entities
+# Define variables used in game loop
+# Movement flags
+move_left = False
+move_right = False
+
+# These variables will change based off the level number
+num_alien_rows = 3
+alien_moves_per_second = 2
+
+# Entities
 player = Defender(defender_img, consts.INITIAL_PLAYER_COORDINATES)
 
 alien_x, alien_y = consts.INITIAL_ALIEN_COORDINATES
@@ -27,12 +36,10 @@ alien_rows = [
     [Alien(alien_img_states[i % len(alien_img_states)],
            (alien_x + consts.ALIEN_HORIZONTAL_GAP * j, alien_y + consts.ALIEN_VERTICAL_GAP * i)) for
      j in range(consts.NUM_ALIENS_PER_ROW)]
-    for i in range(consts.NUM_ALIEN_ROWS)]
+    for i in range(num_alien_rows)]
 
-# Define variables used in game loop
-move_left = False
-move_right = False
 clock = pygame.time.Clock()
+
 start_time = pygame.time.get_ticks()
 delta_time = 0
 
@@ -69,13 +76,14 @@ while run_game:
         player.move_left()
 
     # Move aliens
-    if delta_time >= 1 / consts.ALIEN_MOVES_PER_SECOND * 1_000:
+    if delta_time >= 1 / alien_moves_per_second * 1_000:
         drop_row = False
         for row in alien_rows:
             for alien in row:
                 alien.move()
                 if not alien.in_bounds():
                     drop_row = True
+                    print(alien.x, alien.y)
 
         if drop_row:
             for row in alien_rows:

@@ -18,10 +18,10 @@ class _Entity:
         return self.in_left_bound() and self.in_right_bound()
 
     def in_left_bound(self):
-        return self.x >= consts.LEFT_BOUND
+        return self.x > consts.LEFT_BOUND
 
     def in_right_bound(self):
-        return self.x <= consts.RIGHT_BOUND
+        return self.x < consts.RIGHT_BOUND
 
 
 class Alien(_Entity):
