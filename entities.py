@@ -1,3 +1,5 @@
+import pygame
+
 import constants as consts
 
 
@@ -39,9 +41,6 @@ class Alien(_Entity):
 
 
 class Defender(_Entity):
-    def __init__(self, img_states, coordinates):
-        super().__init__(img_states, coordinates)
-
     def move_right(self):
         if self.in_right_bound():
             self.x += consts.PLAYER_SPEED
@@ -49,3 +48,20 @@ class Defender(_Entity):
     def move_left(self):
         if self.in_left_bound():
             self.x -= consts.PLAYER_SPEED
+
+
+class Bullet(_Entity):
+    def __init__(self, img, coordinates):
+        super().__init__(img, coordinates)
+        self.is_active = False
+
+    def fire(self, coordinates):
+        self.x, self.y = coordinates
+        self.is_active = True
+
+    def move(self):
+        if self.is_active:
+            self.y -= consts.BULLET_SPEED
+
+    def in_bounds(self):
+        return self.y > consts.TOP_BOUND

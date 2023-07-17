@@ -1,6 +1,6 @@
 import pygame
 import constants as consts
-from entities import Defender, Alien
+from entities import Defender, Alien, Bullet
 
 pygame.init()
 
@@ -13,6 +13,7 @@ alien_img_states = [
 ]
 ufo_img = pygame.image.load("assets/ufo.png")
 game_logo = pygame.image.load("assets/game_logo.png")
+bullet_img = pygame.image.load("assets/bullet.png")
 
 # Initialize the display
 screen = pygame.display.set_mode(consts.SCREEN_SIZE)
@@ -20,16 +21,17 @@ pygame.display.set_caption("Space Invaders")
 pygame.display.set_icon(game_logo)
 
 # Define variables used in game loop
-# Movement flags
+#   Movement flags
 move_left = False
 move_right = False
 
-# These variables will change based off the level number
+#   These variables will change based off the level number
 num_alien_rows = 3
 alien_moves_per_second = 2
 
-# Entities
+#   Entities
 player = Defender(defender_img, consts.INITIAL_PLAYER_COORDINATES)
+bullet = Bullet(bullet_img, (0, 0))
 
 alien_x, alien_y = consts.INITIAL_ALIEN_COORDINATES
 alien_rows = [
@@ -38,8 +40,8 @@ alien_rows = [
      j in range(consts.NUM_ALIENS_PER_ROW)]
     for i in range(num_alien_rows)]
 
+#   Time management
 clock = pygame.time.Clock()
-
 start_time = pygame.time.get_ticks()
 delta_time = 0
 
@@ -61,6 +63,8 @@ while run_game:
                 move_right = True
             elif event.key == pygame.K_LEFT:
                 move_left = True
+            elif event.key == pygame.K_SPACE and not bullet.is_active:
+                bullet.fire((player.x, player.y))
 
         # Key is released
         elif event.type == pygame.KEYUP:
@@ -91,11 +95,20 @@ while run_game:
 
         start_time = pygame.time.get_ticks()
 
+    # Move and update the bullet
+    bullet.move()
+    if not bullet.in_bounds():
+        bullet.is_active = False
+
     # Display the entities
     player.display(screen)
     for row in alien_rows:
         for alien in row:
             alien.display(screen)
+
+    # Display the bullet if active
+    if bullet.is_active:
+        bullet.display(screen)
 
     pygame.display.update()
 
