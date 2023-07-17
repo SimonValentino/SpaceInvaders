@@ -6,11 +6,11 @@ pygame.init()
 
 # Assets
 defender_img = pygame.image.load("assets/defender.png")
-alien_imgs = {
-    1: pygame.image.load("assets/alien1.png"),
-    2: pygame.image.load("assets/alien2.png"),
-    3: pygame.image.load("assets/alien3.png")
-}
+alien_img_states = [
+    [pygame.image.load("assets/alien1_state1.png"), pygame.image.load("assets/alien1_state2.png")],
+    [pygame.image.load("assets/alien2_state1.png"), pygame.image.load("assets/alien2_state2.png")],
+    [pygame.image.load("assets/alien3_state1.png"), pygame.image.load("assets/alien3_state2.png")]
+]
 ufo_img = pygame.image.load("assets/ufo.png")
 game_logo = pygame.image.load("assets/game_logo.png")
 
@@ -19,21 +19,13 @@ screen = pygame.display.set_mode(consts.SCREEN_SIZE)
 pygame.display.set_caption("Space Invaders")
 pygame.display.set_icon(game_logo)
 
-
-# Functions
-def disp_entities():
-    player.display(screen)
-    for row in alien_rows:
-        for alien in row:
-            alien.display(screen)
-
-
 # Define entities
 player = Defender(defender_img, consts.INITIAL_PLAYER_COORDINATES)
 
 alien_x, alien_y = consts.INITIAL_ALIEN_COORDINATES
 alien_rows = [
-    [Alien(alien_imgs[i + 1], (alien_x + consts.ALIEN_HORIZONTAL_GAP * j, alien_y + consts.ALIEN_VERTICAL_GAP * i)) for
+    [Alien(alien_img_states[i % len(alien_img_states)],
+           (alien_x + consts.ALIEN_HORIZONTAL_GAP * j, alien_y + consts.ALIEN_VERTICAL_GAP * i)) for
      j in range(consts.NUM_ALIENS_PER_ROW)]
     for i in range(consts.NUM_ALIEN_ROWS)]
 
@@ -41,10 +33,14 @@ alien_rows = [
 move_left = False
 move_right = False
 clock = pygame.time.Clock()
+start_time = pygame.time.get_ticks()
+delta_time = 0
 
 # Game loop
 run_game = True
 while run_game:
+    delta_time = pygame.time.get_ticks() - start_time
+
     screen.fill(consts.BG_SCREEN_COLOR)
 
     # Input checking
@@ -67,12 +63,33 @@ while run_game:
                 move_left = False
 
     # Update player position based on movement flags
-    if move_right and player.in_right_bound():
+    if move_right:
         player.move_right()
-    elif move_left and player.in_left_bound():
+    elif move_left:
         player.move_left()
 
-    disp_entities()
+    # Move aliens
+    if delta_time >= 1 / consts.ALIEN_MOVES_PER_SECOND * 1_000:
+        drop_row = False
+        for row in alien_rows:
+            for alien in row:
+                alien.move()
+                if not alien.in_bounds():
+                    drop_row = True
+
+        if drop_row:
+            for row in alien_rows:
+                for alien in row:
+                    alien.drop_row()
+
+        start_time = pygame.time.get_ticks()
+
+    # Display the entities
+    player.display(screen)
+    for row in alien_rows:
+        for alien in row:
+            alien.display(screen)
+
     pygame.display.update()
 
     clock.tick(consts.FPS)
