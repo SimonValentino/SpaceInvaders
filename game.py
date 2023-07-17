@@ -83,7 +83,6 @@ while run_game:
                 alien.move()
                 if not alien.in_bounds():
                     drop_row = True
-                    print(alien.x, alien.y)
 
         if drop_row:
             for row in alien_rows:
