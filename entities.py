@@ -1,7 +1,7 @@
 import constants as consts
 
 
-class __Entity:
+class _Entity:
     def __init__(self, img, coordinates):
         self.img = img
         self.x, self.y = coordinates
@@ -16,7 +16,7 @@ class __Entity:
         return self.x <= consts.RIGHT_BOUND
 
 
-class Alien(__Entity):
+class Alien(_Entity):
     def __init__(self, img, coordinates):
         super().__init__(img, coordinates)
         self.__direction = 1
@@ -29,7 +29,7 @@ class Alien(__Entity):
         self.__direction *= -1
 
 
-class Defender(__Entity):
+class Defender(_Entity):
     def __init__(self, img, coordinates):
         super().__init__(img, coordinates)
         self.img = img
