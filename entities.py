@@ -74,8 +74,8 @@ class Alien(_Entity):
 class Player(_Entity):
     def __init__(self, img_states, coordinates):
         death_states = [
-            pygame.image.load("assets/icons/player_death.png")
-        ]
+                           pygame.image.load("assets/icons/player_death.png")
+                       ] * 100
         super().__init__(img_states, death_states, coordinates)
         self._body = pygame.Rect(self.x + consts.PLAYER_BODY_LEFT_PAD, self.y + consts.PLAYER_BODY_TOP_PAD,
                                  consts.PLAYER_WIDTH, consts.PLAYER_HEIGHT)
@@ -91,27 +91,51 @@ class Player(_Entity):
             self._body.topleft = (self.x + consts.PLAYER_BODY_LEFT_PAD, self.y + consts.PLAYER_BODY_TOP_PAD)
 
 
-class Bullet(_Entity):
-    def __init__(self, img, coordinates):
-        super().__init__(img, None, coordinates)
+class _Bullet(_Entity):
+    def __init__(self, img_states, death_states, coordinates):
+        super().__init__(img_states, death_states, coordinates)
         self._body = pygame.Rect(self.x + consts.BULLET_BODY_LEFT_PAD, self.y + consts.BULLET_BODY_TOP_PAD,
                                  consts.BULLET_WIDTH, consts.BULLET_HEIGHT)
-        self.is_active = False
+
+    def collides_with(self, entity):
+        return self._body.colliderect(entity._body)
 
     def fire(self, coordinates):
         self.x, self.y = coordinates
-        self.is_active = True
         self._body.topleft = (self.x + consts.BULLET_BODY_LEFT_PAD, self.y + consts.BULLET_BODY_TOP_PAD)
+
+
+class PlayerBullet(_Bullet):
+    def __init__(self, img_states, coordinates):
+        super().__init__(img_states, None, coordinates)
+        self.__speed = consts.PLAYER_BULLET_SPEED
+        self.is_active = False
 
     def move(self):
         if self.is_active:
-            self.y -= consts.BULLET_SPEED
+            self.y -= self.__speed
             self._body.topleft = (self.x + consts.BULLET_BODY_LEFT_PAD, self.y + consts.BULLET_BODY_TOP_PAD)
 
     def in_bounds(self):
         return self.y > consts.TOP_BOUND
 
+    def fire(self, coordinates):
+        super().fire(coordinates)
+        self.is_active = True
+
     def collides_with(self, entity):
         if self.is_active:
-            return self._body.colliderect(entity._body)
-        return False
+            return super().collides_with(entity)
+
+
+class AlienBullet(_Bullet):
+    def __init__(self, img_states, coordinates):
+        super().__init__(img_states, None, coordinates)
+        self.__speed = consts.BASE_ALIEN_BULLET_SPEED
+
+    def move(self):
+        self.y += self.__speed
+        self._body.topleft = (self.x + consts.BULLET_BODY_LEFT_PAD, self.y + consts.BULLET_BODY_TOP_PAD)
+
+    def in_bounds(self):
+        return self.y < consts.BOTTOM_BOUND

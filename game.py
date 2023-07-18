@@ -1,7 +1,8 @@
 import pygame
 import constants as consts
-from entities import Player, Alien, Bullet
+from entities import Player, Alien, PlayerBullet, AlienBullet
 from screen_displays import Hud
+import random
 
 pygame.init()
 
@@ -33,7 +34,7 @@ alien_moves_per_second = consts.BASE_ALIEN_MOVES_PER_SECOND
 
 #   Entities
 player = Player(player_img, consts.INITIAL_PLAYER_COORDINATES)
-bullet = Bullet(bullet_img, (0, 0))
+player_bullet = PlayerBullet(bullet_img, (0, 0))
 
 alien_x, alien_y = consts.INITIAL_ALIEN_COORDINATES
 alien_rows = [
@@ -41,6 +42,7 @@ alien_rows = [
            (alien_x + consts.ALIEN_HORIZONTAL_GAP * j, alien_y + consts.ALIEN_VERTICAL_GAP * i)) for
      j in range(consts.NUM_ALIENS_PER_ROW)]
     for i in range(num_alien_rows)]
+alien_bullets = []
 
 #   Game displays
 hud = Hud()
@@ -68,8 +70,8 @@ while run_game:
                 move_right = True
             elif event.key == pygame.K_LEFT:
                 move_left = True
-            elif event.key == pygame.K_SPACE and not bullet.is_active:
-                bullet.fire((player.x, player.y))
+            elif event.key == pygame.K_SPACE and not player_bullet.is_active:
+                player_bullet.fire((player.x, player.y))
 
         # Key is released
         elif event.type == pygame.KEYUP:
@@ -101,16 +103,33 @@ while run_game:
 
         start_time = pygame.time.get_ticks()
 
-    # Move and update the bullet
-    bullet.move()
-    if not bullet.in_bounds():
-        bullet.is_active = False
-
-    # Collision detection between bullet and aliens
+    # Alien shooting logic
     for row in alien_rows:
         for alien in row:
-            if bullet.is_active and bullet.collides_with(alien):
-                bullet.is_active = False
+            if random.randint(1, 500) <= consts.BASE_ALIEN_SHOOTING_CHANCE:
+                bullet = AlienBullet(bullet_img, (alien.x, alien.y))
+                alien_bullets.append(bullet)
+
+    # Move and update the alien bullets
+    for bullet in alien_bullets:
+        bullet.move()
+        if not bullet.in_bounds():
+            alien_bullets.remove(bullet)
+        elif bullet.collides_with(player):
+            # Collision detection between alien bullets and player
+            player.kill()
+            hud.loose_life()
+
+    # Move and update the player bullet
+    player_bullet.move()
+    if not player_bullet.in_bounds():
+        player_bullet.is_active = False
+
+    # Collision detection between player bullet and aliens
+    for row in alien_rows:
+        for alien in row:
+            if player_bullet.is_active and player_bullet.collides_with(alien):
+                player_bullet.is_active = False
                 alien.kill()
                 hud.update_score(consts.NUM_POINTS_FOR_ALIEN_KILL)
 
@@ -120,12 +139,15 @@ while run_game:
 
     # Display the entities
     player.display(screen)
+
     for row in alien_rows:
         for alien in row:
             alien.display(screen)
 
-    # Display the bullet if active
-    if bullet.is_active:
+    if player_bullet.is_active:
+        player_bullet.display(screen)
+
+    for bullet in alien_bullets:
         bullet.display(screen)
 
     hud.display(screen)

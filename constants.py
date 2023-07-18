@@ -4,6 +4,7 @@ ICON_SIZE = (64, 64)
 LEFT_BOUND = 0
 RIGHT_BOUND = SCREEN_SIZE[0] - ICON_SIZE[0]
 TOP_BOUND = 0
+BOTTOM_BOUND = SCREEN_SIZE[1]
 
 # Player constants
 INITIAL_PLAYER_COORDINATES = (SCREEN_SIZE[0] / 2 - ICON_SIZE[0] / 2,
@@ -14,12 +15,12 @@ PLAYER_WIDTH = 52
 PLAYER_HEIGHT = 31
 PLAYER_SPEED = 7  # Num pixels the player moves left or right with each key pressed
 
-# Bullet constants
+# PlayerBullet constants
 BULLET_BODY_LEFT_PAD = 30
 BULLET_BODY_TOP_PAD = 0
 BULLET_WIDTH = 4
 BULLET_HEIGHT = 17
-BULLET_SPEED = 30
+PLAYER_BULLET_SPEED = 30
 
 # Alien constants
 INITIAL_ALIEN_COORDINATES = (SCREEN_SIZE[0] / 16, SCREEN_SIZE[1] / 10)
@@ -34,6 +35,10 @@ ALIEN_VERTICAL_GAP = SCREEN_SIZE[1] / 20
 BASE_ALIEN_MOVES_PER_SECOND = 2
 ALIEN_SPEED = 10  # Num pixels alien traverses each time it moves
 ALIEN_SPEED_SCALE = 1.2
+
+# Alien bullet constants
+BASE_ALIEN_BULLET_SPEED = 10
+BASE_ALIEN_SHOOTING_CHANCE = 1
 
 # Hud constants
 FONT_SIZE = int(ICON_SIZE[0] / 1.7)
