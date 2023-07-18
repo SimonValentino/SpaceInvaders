@@ -111,8 +111,12 @@ while run_game:
         for alien in row:
             if bullet.is_active and bullet.collides_with(alien):
                 bullet.is_active = False
-                row.remove(alien)
+                alien.kill()
                 hud.update_score(consts.NUM_POINTS_FOR_ALIEN_KILL)
+
+    # Remove the aliens that are set to remove
+    for i in range(len(alien_rows)):
+        alien_rows[i] = [alien for alien in alien_rows[i] if not alien.set_to_remove]
 
     # Display the entities
     player.display(screen)
