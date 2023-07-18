@@ -36,5 +36,10 @@ BASE_ALIEN_MOVES_PER_SECOND = 2
 ALIEN_SPEED = 10  # Num pixels alien traverses each time it moves
 ALIEN_SPEED_SCALE = 1.2
 
+# Hud constants
+FONT_SIZE = ICON_SIZE[0]
+SCORE_TEXT_COORDINATES = (SCREEN_SIZE[0] / 40, 10)
+NUM_LIVES_TEXT_COORDINATES = (SCREEN_SIZE[0] / 2, 10)
+
 # Other
 FPS = 30  # Used to maintain smooth movement

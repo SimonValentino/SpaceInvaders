@@ -1,6 +1,7 @@
 import pygame
 import constants as consts
 from entities import Player, Alien, Bullet
+from screen_displays import Hud
 
 pygame.init()
 
@@ -45,6 +46,8 @@ alien_rows = [
 clock = pygame.time.Clock()
 start_time = pygame.time.get_ticks()
 delta_time = 0
+
+hud = Hud()
 
 # Game loop
 run_game = True
@@ -93,7 +96,7 @@ while run_game:
             for row in alien_rows:
                 for alien in row:
                     alien.drop_row()
-            alien_moves_per_second *= consts.ALIEN_SPEED_SCALE
+            alien_moves_per_second *= consts.ALIEN_SPEED_SCALE * current_level
 
         start_time = pygame.time.get_ticks()
 
@@ -118,6 +121,8 @@ while run_game:
     # Display the bullet if active
     if bullet.is_active:
         bullet.display(screen)
+
+    hud.display(screen)
 
     pygame.display.update()
 
