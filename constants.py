@@ -4,7 +4,6 @@ ICON_SIZE = (64, 64)
 LEFT_BOUND = 0
 RIGHT_BOUND = SCREEN_SIZE[0] - ICON_SIZE[0]
 TOP_BOUND = 0
-BG_SCREEN_COLOR = (0, 0, 0)  # Black in RGB
 
 # Player constants
 INITIAL_PLAYER_COORDINATES = (SCREEN_SIZE[0] / 2 - ICON_SIZE[0] / 2,
@@ -13,7 +12,7 @@ PLAYER_BODY_LEFT_PAD = 6
 PLAYER_BODY_TOP_PAD = 17
 PLAYER_WIDTH = 52
 PLAYER_HEIGHT = 31
-PLAYER_SPEED = 5  # Num pixels the player moves left or right with each key pressed
+PLAYER_SPEED = 7  # Num pixels the player moves left or right with each key pressed
 
 # Bullet constants
 BULLET_BODY_LEFT_PAD = 30
@@ -37,9 +36,13 @@ ALIEN_SPEED = 10  # Num pixels alien traverses each time it moves
 ALIEN_SPEED_SCALE = 1.2
 
 # Hud constants
-FONT_SIZE = ICON_SIZE[0]
-SCORE_TEXT_COORDINATES = (SCREEN_SIZE[0] / 40, 10)
-NUM_LIVES_TEXT_COORDINATES = (SCREEN_SIZE[0] / 2, 10)
+FONT_SIZE = int(ICON_SIZE[0] / 1.7)
+SCORE_TEXT_COORDINATES = (SCREEN_SIZE[0] / 4 - FONT_SIZE * 5 / 2,
+                          SCREEN_SIZE[1] / 100)
+SCORE_VALUE_COORDINATES = (SCORE_TEXT_COORDINATES[0], FONT_SIZE + SCREEN_SIZE[1] / 50)
+NUM_LIVES_TEXT_COORDINATES = (SCREEN_SIZE[0] / 4 * 3 - FONT_SIZE * 5 / 2,
+                              SCREEN_SIZE[1] / 100)
+NUM_LIVES_VALUE_COORDINATES = (NUM_LIVES_TEXT_COORDINATES[0], FONT_SIZE + SCREEN_SIZE[1] / 50)
 
 # Other
 FPS = 30  # Used to maintain smooth movement

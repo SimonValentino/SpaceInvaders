@@ -42,19 +42,20 @@ alien_rows = [
      j in range(consts.NUM_ALIENS_PER_ROW)]
     for i in range(num_alien_rows)]
 
+#   Game displays
+hud = Hud()
+
 #   Time management
 clock = pygame.time.Clock()
 start_time = pygame.time.get_ticks()
 delta_time = 0
-
-hud = Hud()
 
 # Game loop
 run_game = True
 while run_game:
     delta_time = pygame.time.get_ticks() - start_time
 
-    screen.fill(consts.BG_SCREEN_COLOR)
+    screen.fill((0, 0, 0))
 
     # Input checking
     for event in pygame.event.get():
@@ -111,6 +112,7 @@ while run_game:
             if bullet.is_active and bullet.collides_with(alien):
                 bullet.is_active = False
                 row.remove(alien)
+                hud.update_score(10)
 
     # Display the entities
     player.display(screen)
