@@ -22,6 +22,46 @@ screen = pygame.display.set_mode(consts.SCREEN_SIZE)
 pygame.display.set_caption("Space Invaders")
 pygame.display.set_icon(game_logo)
 
+
+# Functions
+def define_alien_rows():
+    alien_x, alien_y = consts.INITIAL_ALIEN_COORDINATES
+    return [
+        [Alien(alien_img_states[i % len(alien_img_states)],
+               (alien_x + consts.ALIEN_HORIZONTAL_GAP * j, alien_y + consts.ALIEN_VERTICAL_GAP * i)) for
+         j in range(consts.NUM_ALIENS_PER_ROW)]
+        for i in range(num_alien_rows)]
+
+
+def restart_level():
+    global alien_rows, alien_bullets, player
+
+    player = Player(player_img, consts.INITIAL_PLAYER_COORDINATES)
+
+    alien_rows = define_alien_rows()
+    alien_bullets = []
+
+
+def display_game():
+    global row, alien, bullet
+
+    player.display(screen)
+
+    for row in alien_rows:
+        for alien in row:
+            alien.display(screen)
+
+    if player_bullet.is_active:
+        player_bullet.display(screen)
+
+    for bullet in alien_bullets:
+        bullet.display(screen)
+
+    hud.display(screen)
+
+    pygame.display.update()
+
+
 # Define variables used in game loop
 #   Movement flags
 move_left = False
@@ -36,12 +76,7 @@ alien_moves_per_second = consts.BASE_ALIEN_MOVES_PER_SECOND
 player = Player(player_img, consts.INITIAL_PLAYER_COORDINATES)
 player_bullet = PlayerBullet(bullet_img, (0, 0))
 
-alien_x, alien_y = consts.INITIAL_ALIEN_COORDINATES
-alien_rows = [
-    [Alien(alien_img_states[i % len(alien_img_states)],
-           (alien_x + consts.ALIEN_HORIZONTAL_GAP * j, alien_y + consts.ALIEN_VERTICAL_GAP * i)) for
-     j in range(consts.NUM_ALIENS_PER_ROW)]
-    for i in range(num_alien_rows)]
+alien_rows = define_alien_rows()
 alien_bullets = []
 
 #   Game displays
@@ -54,6 +89,7 @@ delta_time = 0
 
 # Game loop
 run_game = True
+
 while run_game:
     delta_time = pygame.time.get_ticks() - start_time
 
@@ -118,7 +154,10 @@ while run_game:
         elif bullet.collides_with(player):
             # Collision detection between alien bullets and player
             player.kill()
+            display_game()
+            pygame.time.wait(3_000)
             hud.loose_life()
+            restart_level()
 
     # Move and update the player bullet
     player_bullet.move()
@@ -137,21 +176,6 @@ while run_game:
     for i in range(len(alien_rows)):
         alien_rows[i] = [alien for alien in alien_rows[i] if not alien.set_to_remove]
 
-    # Display the entities
-    player.display(screen)
-
-    for row in alien_rows:
-        for alien in row:
-            alien.display(screen)
-
-    if player_bullet.is_active:
-        player_bullet.display(screen)
-
-    for bullet in alien_bullets:
-        bullet.display(screen)
-
-    hud.display(screen)
-
-    pygame.display.update()
+    display_game()
 
     clock.tick(consts.FPS)
