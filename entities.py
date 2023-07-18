@@ -10,8 +10,6 @@ class _Entity:
         self.__num_img_states = len(img_states)
         self.x, self.y = coordinates
         self._body = self.__img_states[self._curr_img_index].get_rect()
-        self._body.topleft = (self.x, self.y)
-        self._body.width, self._body.height = consts.ICON_SIZE
 
     def display(self, screen):
         screen.blit(self.__img_states[self._curr_img_index % self.__num_img_states],
@@ -40,6 +38,7 @@ class Alien(_Entity):
     def drop_row(self):
         self.y += consts.ALIEN_VERTICAL_GAP
         self._body.topleft = (self.x, self.y)
+        self.__direction *= -1
 
 
 class Player(_Entity):
