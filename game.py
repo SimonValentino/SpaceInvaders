@@ -5,7 +5,7 @@ from entities import Player, Alien, Bullet
 pygame.init()
 
 # Assets
-defender_img = pygame.image.load("assets/defender.png")
+player_img = pygame.image.load("assets/player.png")
 alien_img_states = [
     [pygame.image.load("assets/alien1_state1.png"), pygame.image.load("assets/alien1_state2.png")],
     [pygame.image.load("assets/alien2_state1.png"), pygame.image.load("assets/alien2_state2.png")],
@@ -31,7 +31,7 @@ num_alien_rows = consts.BASE_NUM_ALIEN_ROWS
 alien_moves_per_second = consts.BASE_ALIEN_MOVES_PER_SECOND
 
 #   Entities
-player = Player(defender_img, consts.INITIAL_PLAYER_COORDINATES)
+player = Player(player_img, consts.INITIAL_PLAYER_COORDINATES)
 bullet = Bullet(bullet_img, (0, 0))
 
 alien_x, alien_y = consts.INITIAL_ALIEN_COORDINATES
@@ -93,6 +93,7 @@ while run_game:
             for row in alien_rows:
                 for alien in row:
                     alien.drop_row()
+            alien_moves_per_second *= consts.ALIEN_SPEED_SCALE
 
         start_time = pygame.time.get_ticks()
 
