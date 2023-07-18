@@ -6,15 +6,15 @@ from screen_displays import Hud
 pygame.init()
 
 # Assets
-player_img = pygame.image.load("assets/player.png")
+player_img = pygame.image.load("assets/icons/player.png")
 alien_img_states = [
-    [pygame.image.load("assets/alien1_state1.png"), pygame.image.load("assets/alien1_state2.png")],
-    [pygame.image.load("assets/alien2_state1.png"), pygame.image.load("assets/alien2_state2.png")],
-    [pygame.image.load("assets/alien3_state1.png"), pygame.image.load("assets/alien3_state2.png")]
+    [pygame.image.load("assets/icons/alien1_state1.png"), pygame.image.load("assets/icons/alien1_state2.png")],
+    [pygame.image.load("assets/icons/alien2_state1.png"), pygame.image.load("assets/icons/alien2_state2.png")],
+    [pygame.image.load("assets/icons/alien3_state1.png"), pygame.image.load("assets/icons/alien3_state2.png")]
 ]
-ufo_img = pygame.image.load("assets/ufo.png")
-game_logo = pygame.image.load("assets/game_logo.png")
-bullet_img = pygame.image.load("assets/bullet.png")
+ufo_img = pygame.image.load("assets/icons/ufo.png")
+game_logo = pygame.image.load("assets/icons/game_logo.png")
+bullet_img = pygame.image.load("assets/icons/bullet.png")
 
 # Initialize the display
 screen = pygame.display.set_mode(consts.SCREEN_SIZE)
