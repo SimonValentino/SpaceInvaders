@@ -26,7 +26,7 @@ pygame.display.set_icon(game_logo)
 move_left = False
 move_right = False
 
-#   These variables will change based off the level number
+#   These variables will change based off the __level number
 current_level = 1
 num_alien_rows = consts.BASE_NUM_ALIEN_ROWS
 alien_moves_per_second = consts.BASE_ALIEN_MOVES_PER_SECOND
@@ -112,7 +112,7 @@ while run_game:
             if bullet.is_active and bullet.collides_with(alien):
                 bullet.is_active = False
                 row.remove(alien)
-                hud.update_score(10)
+                hud.update_score(consts.NUM_POINTS_FOR_ALIEN_KILL)
 
     # Display the entities
     player.display(screen)
