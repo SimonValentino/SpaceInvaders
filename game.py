@@ -1,6 +1,6 @@
 import pygame
 import constants as consts
-from entities import Defender, Alien, Bullet
+from entities import Player, Alien, Bullet
 
 pygame.init()
 
@@ -26,11 +26,12 @@ move_left = False
 move_right = False
 
 #   These variables will change based off the level number
-num_alien_rows = 3
-alien_moves_per_second = 2
+current_level = 1
+num_alien_rows = consts.BASE_NUM_ALIEN_ROWS
+alien_moves_per_second = consts.BASE_ALIEN_MOVES_PER_SECOND
 
 #   Entities
-player = Defender(defender_img, consts.INITIAL_PLAYER_COORDINATES)
+player = Player(defender_img, consts.INITIAL_PLAYER_COORDINATES)
 bullet = Bullet(bullet_img, (0, 0))
 
 alien_x, alien_y = consts.INITIAL_ALIEN_COORDINATES
@@ -99,6 +100,13 @@ while run_game:
     bullet.move()
     if not bullet.in_bounds():
         bullet.is_active = False
+
+    # Collision detection between bullet and aliens
+    for row in alien_rows:
+        for alien in row:
+            if bullet.is_active and bullet.collides_with(alien):
+                bullet.is_active = False
+                row.remove(alien)
 
     # Display the entities
     player.display(screen)
