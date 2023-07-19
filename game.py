@@ -1,5 +1,5 @@
 import pygame
-import constants as consts
+from constants import *
 from entities import Player, Alien, PlayerBullet, AlienBullet
 from screen_displays import Hud
 import random
@@ -18,28 +18,27 @@ game_logo = pygame.image.load("assets/icons/game_logo.png")
 bullet_img = pygame.image.load("assets/icons/bullet.png")
 
 # Initialize the display
-screen = pygame.display.set_mode(consts.SCREEN_SIZE)
+screen = pygame.display.set_mode(SCREEN_SIZE)
 pygame.display.set_caption("Space Invaders")
 pygame.display.set_icon(game_logo)
 
 
 # Functions
 def define_alien_rows():
-    alien_x, alien_y = consts.INITIAL_ALIEN_COORDINATES
+    alien_x, alien_y = INITIAL_ALIEN_COORDINATES
     return [
         [Alien(alien_img_states[i % len(alien_img_states)],
-               (alien_x + consts.ALIEN_HORIZONTAL_GAP * j, alien_y + consts.ALIEN_VERTICAL_GAP * i)) for
-         j in range(consts.NUM_ALIENS_PER_ROW)]
+               (alien_x + ALIEN_HORIZONTAL_GAP * j, alien_y + ALIEN_VERTICAL_GAP * i)) for
+         j in range(NUM_ALIENS_PER_ROW)]
         for i in range(num_alien_rows)]
 
 
 def restart_level():
-    global alien_rows, alien_bullets, player
+    global player
 
-    player = Player(player_img, consts.INITIAL_PLAYER_COORDINATES)
+    reset_player()
 
-    alien_rows = define_alien_rows()
-    alien_bullets = []
+    set_properties_based_off_level()
 
 
 def display_game():
@@ -62,18 +61,39 @@ def display_game():
     pygame.display.update()
 
 
+def set_properties_based_off_level():
+    global level, num_alien_rows, alien_moves_per_second, alien_chance_to_fire, alien_rows, alien_bullets, points_per_kill
+
+    num_alien_rows = BASE_NUM_ALIEN_ROWS + (level - 1) // NUM_LEVELS_TILL_NEW_ALIEN_ROW
+    alien_moves_per_second = BASE_ALIEN_MOVES_PER_SECOND * ALIEN_LEVEL_BEATEN_MOVES_PER_SECOND_SCALE ** level
+    alien_chance_to_fire *= ALIEN_CHANCE_TO_FIRE_SCALE
+
+    alien_rows = define_alien_rows()
+    alien_bullets = []
+
+    points_per_kill = BASE_POINTS_PER_KILL * (level - 1)
+
+
+def reset_player():
+    global player
+
+    player = Player(player_img, INITIAL_PLAYER_COORDINATES)
+
+
 # Define variables used in game loop
 #   Movement flags
 move_left = False
 move_right = False
 
-#   These variables will change based off the __level number
-current_level = 1
-num_alien_rows = consts.BASE_NUM_ALIEN_ROWS
-alien_moves_per_second = consts.BASE_ALIEN_MOVES_PER_SECOND
+#   These variables will change based off the level number
+level = 1
+num_alien_rows = BASE_NUM_ALIEN_ROWS
+alien_moves_per_second = BASE_ALIEN_MOVES_PER_SECOND
+alien_chance_to_fire = BASE_ALIEN_CHANCE_TO_FIRE
+points_per_kill = BASE_POINTS_PER_KILL
 
 #   Entities
-player = Player(player_img, consts.INITIAL_PLAYER_COORDINATES)
+player = Player(player_img, INITIAL_PLAYER_COORDINATES)
 player_bullet = PlayerBullet(bullet_img, (0, 0))
 
 alien_rows = define_alien_rows()
@@ -91,6 +111,16 @@ delta_time = 0
 run_game = True
 
 while run_game:
+    # Check if level is beaten
+    if not any(alien_rows):
+        pygame.time.wait(3_000)
+
+        level += 1
+        hud.next_level()
+
+        set_properties_based_off_level()
+        reset_player()
+
     delta_time = pygame.time.get_ticks() - start_time
 
     screen.fill((0, 0, 0))
@@ -135,14 +165,14 @@ while run_game:
             for row in alien_rows:
                 for alien in row:
                     alien.drop_row()
-            alien_moves_per_second *= consts.ALIEN_SPEED_SCALE * current_level
+            alien_moves_per_second *= ALIEN_DROP_ROW_MOVES_PER_SECOND_SCALE
 
         start_time = pygame.time.get_ticks()
 
     # Alien shooting logic
     for row in alien_rows:
         for alien in row:
-            if random.randint(1, 500) <= consts.BASE_ALIEN_SHOOTING_CHANCE:
+            if random.random() <= alien_chance_to_fire:
                 bullet = AlienBullet(bullet_img, (alien.x, alien.y))
                 alien_bullets.append(bullet)
 
@@ -170,7 +200,7 @@ while run_game:
             if player_bullet.is_active and player_bullet.collides_with(alien):
                 player_bullet.is_active = False
                 alien.kill()
-                hud.update_score(consts.NUM_POINTS_FOR_ALIEN_KILL)
+                hud.update_score(points_per_kill)
 
     # Remove the aliens that are set to remove
     for i in range(len(alien_rows)):
@@ -178,4 +208,4 @@ while run_game:
 
     display_game()
 
-    clock.tick(consts.FPS)
+    clock.tick(FPS)
