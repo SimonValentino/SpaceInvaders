@@ -141,6 +141,7 @@ class AlienBullet(_Bullet):
     def move(self):
         self.y += self.__speed
         self._body.topleft = (self.x + ALIEN_BULLET_BODY_LEFT_PAD, self.y + ALIEN_BULLET_BODY_TOP_PAD)
+        self._img_frame += 1
 
     def in_bounds(self):
         return self.y < BOTTOM_BOUND

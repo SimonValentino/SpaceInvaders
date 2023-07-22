@@ -23,6 +23,8 @@ alien_death_states = [
 ]
 alien_bullet_states = [
     pygame.image.load("assets/icons/alien_bullet_state1.png"),
+    pygame.image.load("assets/icons/alien_bullet_state1.png"),
+    pygame.image.load("assets/icons/alien_bullet_state2.png"),
     pygame.image.load("assets/icons/alien_bullet_state2.png")
 ]
 
