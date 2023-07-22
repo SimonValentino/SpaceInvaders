@@ -90,38 +90,41 @@ def set_properties_based_off_level():
     points_per_kill = BASE_POINTS_PER_KILL * (level - 1)
 
 
+def restart_game():
+    global hud, level, num_alien_rows, alien_moves_per_second, points_per_kill, alien_chance_to_fire, game_over
+
+    game_over = False
+    level = 1
+    num_alien_rows = BASE_NUM_ALIEN_ROWS
+    alien_moves_per_second = BASE_ALIEN_MOVES_PER_SECOND
+    alien_chance_to_fire = BASE_ALIEN_CHANCE_TO_FIRE
+    points_per_kill = BASE_POINTS_PER_KILL
+    hud = Hud()
+
+    set_properties_based_off_level()
+
+
 def reset_player():
-    global player
+    global player, player_bullet
 
     player = Player(player_img, player_death_state, INITIAL_PLAYER_COORDINATES)
+    player_bullet = PlayerBullet(player_bullet_img, (0, 0))
 
 
 def clear_screen():
     global screen
 
     screen.fill((0, 0, 0))
-
-
-def game_over():
-    global screen, hud
-
-    clear_screen()
-
-    pressed_r = False
-    while not pressed_r:
-        for event in pygame.event.get():
-            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
-                pressed_r = True
-            else:
-                game_over_screen(screen, hud)
-
-        pygame.display.update()
+    pygame.display.update()
 
 
 # Define variables used in game loop
 #   Movement flags
 move_left = False
 move_right = False
+
+#   Game over flag
+game_over = False
 
 #   These variables will change based off the level number
 level = 1
@@ -150,7 +153,7 @@ run_game = True
 
 while run_game:
     if hud.num_lives <= 0:
-        game_over()
+        game_over = True
 
     # Check if level is beaten
     if not any(alien_rows):
@@ -173,12 +176,17 @@ while run_game:
 
         # Key is pressed down
         elif event.type == pygame.KEYDOWN:
-            if event.key == pygame.K_RIGHT:
-                move_right = True
-            elif event.key == pygame.K_LEFT:
-                move_left = True
-            elif event.key == pygame.K_SPACE and not player_bullet.is_active:
-                player_bullet.fire((player.x, player.y))
+            if game_over:
+                if event.key == pygame.K_r:
+                    restart_game()
+
+            else:
+                if event.key == pygame.K_RIGHT:
+                    move_right = True
+                elif event.key == pygame.K_LEFT:
+                    move_left = True
+                elif event.key == pygame.K_SPACE and not player_bullet.is_active:
+                    player_bullet.fire((player.x, player.y))
 
         # Key is released
         elif event.type == pygame.KEYUP:
@@ -186,6 +194,11 @@ while run_game:
                 move_right = False
             elif event.key == pygame.K_LEFT:
                 move_left = False
+
+    if game_over:
+        game_over_screen(screen, hud)
+        pygame.display.update()
+        continue
 
     # Update player position based on movement flags
     if move_right:

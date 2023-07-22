@@ -6,7 +6,7 @@ __screen_info = pygame.display.Info()
 __height = __screen_info.current_h
 
 # Screen constants
-SCREEN_SIZE = (__height / 5 * 4, __height)
+SCREEN_SIZE = (__height / 7 * 6, __height)
 ICON_SIZE = (64, 64)
 LEFT_BOUND = 0
 RIGHT_BOUND = SCREEN_SIZE[0] - ICON_SIZE[0]
@@ -31,7 +31,7 @@ PLAYER_BULLET_WIDTH = 4
 PLAYER_BULLET_HEIGHT = 17
 
 # Alien constants
-INITIAL_ALIEN_COORDINATES = (SCREEN_SIZE[0] / 16, SCREEN_SIZE[1] / 10)
+INITIAL_ALIEN_COORDINATES = (ICON_SIZE[0], SCREEN_SIZE[1] / 10)
 ALIEN_BODY_LEFT_PAD = 2
 ALIEN_BODY_TOP_PAD = 7
 ALIEN_WIDTH = 60
