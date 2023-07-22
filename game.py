@@ -153,12 +153,13 @@ run_game = True
 
 while run_game:
     if hud.num_lives <= 0:
+        hud.update_high_score()
+        hud.save_high_score()
         game_over = True
 
     # Check if level is beaten
     if not any(alien_rows):
         pygame.time.wait(3_000)
-
         level += 1
         hud.next_level()
 
