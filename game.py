@@ -8,14 +8,27 @@ pygame.init()
 
 # Assets
 player_img = pygame.image.load("assets/icons/player.png")
+player_death_state = pygame.image.load("assets/icons/player_death.png")
+player_bullet_img = pygame.image.load("assets/icons/player_bullet.png")
+
 alien_img_states = [
     [pygame.image.load("assets/icons/alien1_state1.png"), pygame.image.load("assets/icons/alien1_state2.png")],
     [pygame.image.load("assets/icons/alien2_state1.png"), pygame.image.load("assets/icons/alien2_state2.png")],
     [pygame.image.load("assets/icons/alien3_state1.png"), pygame.image.load("assets/icons/alien3_state2.png")]
 ]
+alien_death_states = [
+    pygame.image.load("assets/icons/alien_death_state1.png"),
+    pygame.image.load("assets/icons/alien_death_state2.png"),
+    pygame.image.load("assets/icons/alien_death_state3.png")
+]
+alien_bullet_states = [
+    pygame.image.load("assets/icons/alien_bullet_state1.png"),
+    pygame.image.load("assets/icons/alien_bullet_state2.png")
+]
+
 ufo_img = pygame.image.load("assets/icons/ufo.png")
+
 game_logo = pygame.image.load("assets/icons/game_logo.png")
-bullet_img = pygame.image.load("assets/icons/bullet.png")
 
 # Initialize the display
 screen = pygame.display.set_mode(SCREEN_SIZE)
@@ -27,22 +40,23 @@ pygame.display.set_icon(game_logo)
 def define_alien_rows():
     alien_x, alien_y = INITIAL_ALIEN_COORDINATES
     return [
-        [Alien(alien_img_states[i % len(alien_img_states)],
+        [Alien(alien_img_states[i % len(alien_img_states)], alien_death_states,
                (alien_x + ALIEN_HORIZONTAL_GAP * j, alien_y + ALIEN_VERTICAL_GAP * i)) for
          j in range(NUM_ALIENS_PER_ROW)]
         for i in range(num_alien_rows)]
 
 
 def restart_level():
-    global player
+    global player, hud
 
+    hud.loose_life()
     reset_player()
 
     set_properties_based_off_level()
 
 
 def display_game():
-    global row, alien, bullet
+    global alien_rows, player, bullet
 
     player.display(screen)
 
@@ -77,7 +91,7 @@ def set_properties_based_off_level():
 def reset_player():
     global player
 
-    player = Player(player_img, INITIAL_PLAYER_COORDINATES)
+    player = Player(player_img, player_death_state, INITIAL_PLAYER_COORDINATES)
 
 
 # Define variables used in game loop
@@ -93,8 +107,8 @@ alien_chance_to_fire = BASE_ALIEN_CHANCE_TO_FIRE
 points_per_kill = BASE_POINTS_PER_KILL
 
 #   Entities
-player = Player(player_img, INITIAL_PLAYER_COORDINATES)
-player_bullet = PlayerBullet(bullet_img, (0, 0))
+player = Player(player_img, player_death_state, INITIAL_PLAYER_COORDINATES)
+player_bullet = PlayerBullet(player_bullet_img, (0, 0))
 
 alien_rows = define_alien_rows()
 alien_bullets = []
@@ -173,7 +187,7 @@ while run_game:
     for row in alien_rows:
         for alien in row:
             if random.random() <= alien_chance_to_fire:
-                bullet = AlienBullet(bullet_img, (alien.x, alien.y))
+                bullet = AlienBullet(alien_bullet_states, (alien.x, alien.y))
                 alien_bullets.append(bullet)
 
     # Move and update the alien bullets
@@ -186,7 +200,6 @@ while run_game:
             player.kill()
             display_game()
             pygame.time.wait(3_000)
-            hud.loose_life()
             restart_level()
 
     # Move and update the player bullet
@@ -201,6 +214,23 @@ while run_game:
                 player_bullet.is_active = False
                 alien.kill()
                 hud.update_score(points_per_kill)
+
+    # Check for alien invasion
+    #   Finding last alien
+    for row in reversed(range(len(alien_rows))):
+        for col in reversed(range(len(alien_rows[row]))):
+            if alien_rows[row][col]:
+                #   Invade if alien is over bounds
+                if alien_rows[row][col].in_player_territory():
+                    pygame.time.wait(2_000)
+                    alien_rows[row][col].invade(player)
+                    player.kill()
+                    display_game()
+                    pygame.time.wait(5_000)
+                    restart_level()
+                    break
+                else:
+                    break
 
     # Remove the aliens that are set to remove
     for i in range(len(alien_rows)):

@@ -48,12 +48,7 @@ class _Entity:
 
 
 class Alien(_Entity):
-    def __init__(self, img_states, coordinates):
-        death_states = [
-            pygame.image.load("assets/icons/alien_death_state1.png"),
-            pygame.image.load("assets/icons/alien_death_state2.png"),
-            pygame.image.load("assets/icons/alien_death_state3.png")
-        ]
+    def __init__(self, img_states, death_states, coordinates):
         super().__init__(img_states, death_states, coordinates)
         self.__direction = 1
         self._body = pygame.Rect(self.x + ALIEN_BODY_LEFT_PAD, self.y + ALIEN_BODY_TOP_PAD,
@@ -69,12 +64,17 @@ class Alien(_Entity):
         self._body.topleft = (self.x + ALIEN_BODY_LEFT_PAD, self.y + ALIEN_BODY_TOP_PAD)
         self.__direction *= -1
 
+    def in_player_territory(self):
+        return self.y > ALIEN_INVASION_BOUND
+
+    def invade(self, player):
+        self.x = player.x
+        self.y = player.y - ICON_SIZE[1] + PLAYER_BODY_TOP_PAD + ALIEN_BODY_TOP_PAD
+        self._body.topleft = (self.x + ALIEN_BODY_LEFT_PAD, self.y + ALIEN_BODY_TOP_PAD)
+
 
 class Player(_Entity):
-    def __init__(self, img_states, coordinates):
-        death_states = [
-                           pygame.image.load("assets/icons/player_death.png")
-                       ] * 100
+    def __init__(self, img_states, death_states, coordinates):
         super().__init__(img_states, death_states, coordinates)
         self._body = pygame.Rect(self.x + PLAYER_BODY_LEFT_PAD, self.y + PLAYER_BODY_TOP_PAD,
                                  PLAYER_WIDTH, PLAYER_HEIGHT)
@@ -91,29 +91,33 @@ class Player(_Entity):
 
 
 class _Bullet(_Entity):
-    def __init__(self, img_states, death_states, coordinates):
-        super().__init__(img_states, death_states, coordinates)
-        self._body = pygame.Rect(self.x + BULLET_BODY_LEFT_PAD, self.y + BULLET_BODY_TOP_PAD,
-                                 BULLET_WIDTH, BULLET_HEIGHT)
+    def __init__(self, img_states, coordinates):
+        super().__init__(img_states, None, coordinates)
+
+    def _init_body(self, bullet_body_left_pad, bullet_body_top_pad, bullet_width, bullet_height):
+        self._body = self._body = pygame.Rect(self.x + bullet_body_left_pad, self.y + bullet_body_top_pad,
+                                              bullet_width, bullet_height)
 
     def collides_with(self, entity):
         return self._body.colliderect(entity._body)
 
     def fire(self, coordinates):
         self.x, self.y = coordinates
-        self._body.topleft = (self.x + BULLET_BODY_LEFT_PAD, self.y + BULLET_BODY_TOP_PAD)
+        self._body.topleft = (self.x + PLAYER_BULLET_BODY_LEFT_PAD, self.y + PLAYER_BULLET_BODY_TOP_PAD)
 
 
 class PlayerBullet(_Bullet):
     def __init__(self, img_states, coordinates):
-        super().__init__(img_states, None, coordinates)
+        super().__init__(img_states, coordinates)
+        super()._init_body(PLAYER_BULLET_BODY_LEFT_PAD, PLAYER_BULLET_BODY_TOP_PAD,
+                           PLAYER_BULLET_WIDTH, PLAYER_BULLET_HEIGHT)
         self.__speed = PLAYER_BULLET_SPEED
         self.is_active = False
 
     def move(self):
         if self.is_active:
             self.y -= self.__speed
-            self._body.topleft = (self.x + BULLET_BODY_LEFT_PAD, self.y + BULLET_BODY_TOP_PAD)
+            self._body.topleft = (self.x + PLAYER_BULLET_BODY_LEFT_PAD, self.y + PLAYER_BULLET_BODY_TOP_PAD)
 
     def in_bounds(self):
         return self.y > TOP_BOUND
@@ -129,12 +133,14 @@ class PlayerBullet(_Bullet):
 
 class AlienBullet(_Bullet):
     def __init__(self, img_states, coordinates):
-        super().__init__(img_states, None, coordinates)
+        super().__init__(img_states, coordinates)
+        super()._init_body(ALIEN_BULLET_BODY_LEFT_PAD, ALIEN_BULLET_BODY_TOP_PAD,
+                           ALIEN_BULLET_WIDTH, ALIEN_BULLET_HEIGHT)
         self.__speed = BASE_ALIEN_BULLET_SPEED
 
     def move(self):
         self.y += self.__speed
-        self._body.topleft = (self.x + BULLET_BODY_LEFT_PAD, self.y + BULLET_BODY_TOP_PAD)
+        self._body.topleft = (self.x + ALIEN_BULLET_BODY_LEFT_PAD, self.y + ALIEN_BULLET_BODY_TOP_PAD)
 
     def in_bounds(self):
         return self.y < BOTTOM_BOUND
