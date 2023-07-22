@@ -1,7 +1,7 @@
 import pygame
 from constants import *
 from entities import Player, Alien, PlayerBullet, AlienBullet
-from screen_displays import Hud
+from screen_displays import Hud, game_over_screen
 import random
 
 pygame.init()
@@ -51,7 +51,7 @@ def define_alien_rows():
 def restart_level():
     global player, hud
 
-    hud.loose_life()
+    hud.num_lives -= 1
     reset_player()
 
     set_properties_based_off_level()
@@ -96,6 +96,28 @@ def reset_player():
     player = Player(player_img, player_death_state, INITIAL_PLAYER_COORDINATES)
 
 
+def clear_screen():
+    global screen
+
+    screen.fill((0, 0, 0))
+
+
+def game_over():
+    global screen, hud
+
+    clear_screen()
+
+    pressed_r = False
+    while not pressed_r:
+        for event in pygame.event.get():
+            if event.type == pygame.KEYDOWN and event.key == pygame.K_r:
+                pressed_r = True
+            else:
+                game_over_screen(screen, hud)
+
+        pygame.display.update()
+
+
 # Define variables used in game loop
 #   Movement flags
 move_left = False
@@ -127,6 +149,9 @@ delta_time = 0
 run_game = True
 
 while run_game:
+    if hud.num_lives <= 0:
+        game_over()
+
     # Check if level is beaten
     if not any(alien_rows):
         pygame.time.wait(3_000)
@@ -215,7 +240,7 @@ while run_game:
             if player_bullet.is_active and player_bullet.collides_with(alien):
                 player_bullet.is_active = False
                 alien.kill()
-                hud.update_score(points_per_kill)
+                hud.score += points_per_kill
 
     # Check for alien invasion
     #   Finding last alien
