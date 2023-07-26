@@ -6,7 +6,7 @@ __screen_info = pygame.display.Info()
 __height = __screen_info.current_h
 
 # Screen constants
-SCREEN_SIZE = (__height / 7 * 6, __height)
+SCREEN_SIZE = (__height / 7 * 6, __height - 64)
 ICON_SIZE = (64, 64)
 LEFT_BOUND = 0
 RIGHT_BOUND = SCREEN_SIZE[0] - ICON_SIZE[0]
@@ -46,7 +46,7 @@ ALIEN_SPEED = SCREEN_SIZE[0] / 80  # Num pixels alien traverses each time it mov
 
 # Alien bullet constants
 BASE_ALIEN_BULLET_SPEED = SCREEN_SIZE[1] / 100
-BASE_ALIEN_CHANCE_TO_FIRE = 1 / 1_000 * 50
+BASE_ALIEN_CHANCE_TO_FIRE = 1 / 1_000
 ALIEN_BULLET_BODY_LEFT_PAD = 26
 ALIEN_BULLET_BODY_TOP_PAD = 36
 ALIEN_BULLET_WIDTH = 12
