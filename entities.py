@@ -56,8 +56,7 @@ class Alien(_Entity):
         self.__direction = 1
         self._body = pygame.Rect(self.x + ALIEN_BODY_LEFT_PAD, self.y + ALIEN_BODY_TOP_PAD,
                                  ALIEN_WIDTH, ALIEN_HEIGHT)
-        
-        global __alien_sfx
+        self.__death_sfx = mixer.Sound(r"assets\sounds\alien_killed.wav")
         self.__move_sfx = mixer.Sound(r"assets\sounds\alien1.wav")
 
     def move(self):
@@ -78,6 +77,10 @@ class Alien(_Entity):
         self.x = player.x
         self.y = player.y - ICON_SIZE[1] + PLAYER_BODY_TOP_PAD + ALIEN_BODY_TOP_PAD
         self._body.topleft = (self.x + ALIEN_BODY_LEFT_PAD, self.y + ALIEN_BODY_TOP_PAD)
+    
+    def kill(self):
+        super().kill()
+        self.__death_sfx.play()
 
 
 class Player(_Entity):
@@ -85,6 +88,7 @@ class Player(_Entity):
         super().__init__(img_states, death_states, coordinates)
         self._body = pygame.Rect(self.x + PLAYER_BODY_LEFT_PAD, self.y + PLAYER_BODY_TOP_PAD,
                                  PLAYER_WIDTH, PLAYER_HEIGHT)
+        self.__death_sfx = mixer.Sound(r"assets\sounds\player_killed.wav")
 
     def move_right(self):
         if self.in_right_bound():
@@ -95,6 +99,10 @@ class Player(_Entity):
         if self.in_left_bound():
             self.x -= PLAYER_SPEED
             self._body.topleft = (self.x + PLAYER_BODY_LEFT_PAD, self.y + PLAYER_BODY_TOP_PAD)
+        
+    def kill(self):
+        super().kill()
+        self.__death_sfx.play()
 
 
 class _Bullet(_Entity):
