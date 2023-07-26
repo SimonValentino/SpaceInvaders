@@ -1,5 +1,8 @@
 import pygame
+from pygame import mixer
 from constants import *
+
+mixer.init()
 
 
 class _Entity:
@@ -53,11 +56,15 @@ class Alien(_Entity):
         self.__direction = 1
         self._body = pygame.Rect(self.x + ALIEN_BODY_LEFT_PAD, self.y + ALIEN_BODY_TOP_PAD,
                                  ALIEN_WIDTH, ALIEN_HEIGHT)
+        
+        global __alien_sfx
+        self.__move_sfx = mixer.Sound(r"assets\sounds\alien1.wav")
 
     def move(self):
         self.x += ALIEN_SPEED * self.__direction
         self._body.topleft = (self.x + ALIEN_BODY_LEFT_PAD, self.y + ALIEN_BODY_TOP_PAD)
         self._img_frame += 1
+        self.__move_sfx.play()
 
     def drop_row(self):
         self.y += ALIEN_VERTICAL_GAP
@@ -113,6 +120,7 @@ class PlayerBullet(_Bullet):
                            PLAYER_BULLET_WIDTH, PLAYER_BULLET_HEIGHT)
         self.__speed = PLAYER_BULLET_SPEED
         self.is_active = False
+        self.__fire_sfx = mixer.Sound(r"assets\sounds\fire.wav")
 
     def move(self):
         if self.is_active:
@@ -125,6 +133,7 @@ class PlayerBullet(_Bullet):
     def fire(self, coordinates):
         super().fire(coordinates)
         self.is_active = True
+        self.__fire_sfx.play()
 
     def collides_with(self, entity):
         if self.is_active:
