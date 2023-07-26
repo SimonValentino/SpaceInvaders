@@ -264,14 +264,17 @@ while run_game:
                 #   Invade if alien is over bounds
                 if alien_rows[row][col].in_player_territory():
                     pygame.time.wait(2_000)
+                    clear_screen()
                     alien_rows[row][col].invade(player)
                     player.kill()
-                    display_game()
+                    alien_rows[row][col].display(screen)
+                    player.display(screen)
+                    hud.display(screen)
+                    pygame.display.update()
                     pygame.time.wait(5_000)
                     restart_level()
                     break
-                else:
-                    break
+                break
 
     # Remove the aliens that are set to remove
     for i in range(len(alien_rows)):
