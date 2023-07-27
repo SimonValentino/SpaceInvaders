@@ -98,6 +98,13 @@ class UFO(_Entity):
         self.__death_sfx = mixer.Sound("assets/sounds/ufo_killed.wav")
 
     def activate(self):
+        if random.random() < 0.5:
+            self.x = -UFO_WIDTH
+            self.speed = self.speed if self.speed > 0 else -self.speed
+        else:
+            self.x = SCREEN_SIZE[0]
+            self.speed = self.speed if self.speed < 0 else -self.speed
+        
         self.__is_active = True
 
     def deactivate(self):
@@ -110,8 +117,8 @@ class UFO(_Entity):
         if self.__is_active and not self._is_dead:
             self.x += self.speed
             # Reset UFO position if it goes off the screen
-            if self.x > SCREEN_SIZE[0]:
-                self.x = -UFO_WIDTH
+            if self.x > SCREEN_SIZE[0] or self.x < -UFO_WIDTH:
+                
                 self.deactivate()
                 
             self._body.topleft = (self.x + UFO_LEFT_PAD, self.y + UFO_TOP_PAD)
