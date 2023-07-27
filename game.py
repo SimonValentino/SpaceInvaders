@@ -33,9 +33,15 @@ ufo_death_states = [
     pygame.image.load("assets/icons/ufo_death_state1.png"),
     pygame.image.load("assets/icons/ufo_death_state1.png"),
     pygame.image.load("assets/icons/ufo_death_state1.png"),
+    pygame.image.load("assets/icons/ufo_death_state1.png"),
+    pygame.image.load("assets/icons/ufo_death_state1.png"),
     pygame.image.load("assets/icons/ufo_death_state2.png"),
     pygame.image.load("assets/icons/ufo_death_state2.png"),
     pygame.image.load("assets/icons/ufo_death_state2.png"),
+    pygame.image.load("assets/icons/ufo_death_state2.png"),
+    pygame.image.load("assets/icons/ufo_death_state2.png"),
+    pygame.image.load("assets/icons/ufo_death_state3.png"),
+    pygame.image.load("assets/icons/ufo_death_state3.png"),
     pygame.image.load("assets/icons/ufo_death_state3.png"),
     pygame.image.load("assets/icons/ufo_death_state3.png"),
     pygame.image.load("assets/icons/ufo_death_state3.png")
@@ -103,6 +109,7 @@ def set_properties_based_off_level():
     alien_bullets = []
     
     ufo = UFO(ufo_img, ufo_death_states, INITIAL_UFO_COORDINATES)
+    ufo.speed *= UFO_SPEED_SCALE ** level
 
     points_per_kill = BASE_POINTS_PER_KILL * level
     points_per_ufo_kill = BASE_POINTS_PER_UFO_KILL * level
@@ -180,7 +187,7 @@ while run_game:
         game_over = True
 
     # Check if level is beaten
-    if not any(alien_rows):
+    if not any(alien_rows) and not ufo.is_active():
         pygame.time.wait(3_000)
         level += 1
         hud.next_level()
@@ -286,7 +293,7 @@ while run_game:
     if ufo.is_active() and player_bullet.is_active and player_bullet.collides_with(ufo):
         player_bullet.is_active = False
         ufo.kill()
-        hud.score += 1000
+        hud.score += points_per_ufo_kill
 
     # Check for alien invasion
     #   Finding last alien
@@ -311,6 +318,9 @@ while run_game:
     # Remove the aliens that are set to remove
     for i in range(len(alien_rows)):
         alien_rows[i] = [alien for alien in alien_rows[i] if not alien.set_to_remove]
+    
+    if ufo.set_to_remove:
+        ufo.deactivate()
 
     display_game()
 

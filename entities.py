@@ -4,7 +4,7 @@ from constants import *
 import random
 
 mixer.init()
-mixer.set_num_channels(1)  # For the UFO
+mixer.set_num_channels(10)
 
 
 class _Entity:
@@ -90,11 +90,12 @@ class UFO(_Entity):
         super().__init__(img_states, death_states, coordinates)
         self._body = pygame.Rect(self.x + UFO_LEFT_PAD, self.y + UFO_TOP_PAD,
                                  UFO_WIDTH, UFO_HEIGHT)
-        self.__speed = UFO_SPEED
+        self.speed = BASE_UFO_SPEED
         self.__chance_to_appear = UFO_CHANCE_TO_APPEAR
         self.__is_active = False
-        self.__sound_channel = mixer.Channel(0)
+        self.__sound_channel = mixer.Channel(9)
         self.__move_sfx = mixer.Sound("assets/sounds/ufo.wav")
+        self.__death_sfx = mixer.Sound("assets/sounds/ufo_killed.wav")
 
     def activate(self):
         self.__is_active = True
@@ -107,7 +108,7 @@ class UFO(_Entity):
 
     def move(self):
         if self.__is_active and not self._is_dead:
-            self.x += self.__speed
+            self.x += self.speed
             # Reset UFO position if it goes off the screen
             if self.x > SCREEN_SIZE[0]:
                 self.x = -UFO_WIDTH
@@ -125,6 +126,11 @@ class UFO(_Entity):
             self.y = SCORE_VALUE_COORDINATES[1] + UFO_TOP_PAD
             self._body.topleft = (self.x + UFO_LEFT_PAD, self.y + UFO_TOP_PAD)
             self.activate()
+    
+    def kill(self):
+        super().kill()
+        self.__death_sfx.play()
+        
 
 
 class Player(_Entity):
