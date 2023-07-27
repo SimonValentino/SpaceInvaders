@@ -1,3 +1,6 @@
 data/
 .idea/
 __pycache__/
+game.spec
+dist/
+build/
