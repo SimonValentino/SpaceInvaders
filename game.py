@@ -87,7 +87,7 @@ def set_properties_based_off_level():
     alien_rows = define_alien_rows()
     alien_bullets = []
 
-    points_per_kill = BASE_POINTS_PER_KILL * (level - 1)
+    points_per_kill = BASE_POINTS_PER_KILL * level
 
 
 def restart_game():
