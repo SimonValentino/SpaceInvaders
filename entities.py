@@ -4,6 +4,7 @@ from constants import *
 import random
 
 mixer.init()
+mixer.set_num_channels(1)  # For the UFO
 
 
 class _Entity:
@@ -18,13 +19,13 @@ class _Entity:
             death_states = [death_states]
         self.__death_states = death_states
         self.__death_frame = 0
-        self.__is_dead = False
+        self._is_dead = False
         self.set_to_remove = False
 
         self.x, self.y = coordinates
 
     def display(self, screen):
-        if self.__is_dead:
+        if self._is_dead:
             if self.__death_frame < len(self.__death_states):
                 screen.blit(self.__death_states[self.__death_frame],
                             (self.x, self.y))
@@ -48,7 +49,7 @@ class _Entity:
         return self.x < RIGHT_BOUND
 
     def kill(self):
-        self.__is_dead = True
+        self._is_dead = True
 
 
 class Alien(_Entity):
@@ -57,8 +58,8 @@ class Alien(_Entity):
         self.__direction = 1
         self._body = pygame.Rect(self.x + ALIEN_BODY_LEFT_PAD, self.y + ALIEN_BODY_TOP_PAD,
                                  ALIEN_WIDTH, ALIEN_HEIGHT)
-        self.__death_sfx = mixer.Sound(r"assets\sounds\alien_killed.wav")
-        self.__move_sfx = mixer.Sound(r"assets\sounds\alien1.wav")
+        self.__death_sfx = mixer.Sound("assets/sounds/alien_killed.wav")
+        self.__move_sfx = mixer.Sound("assets/sounds/alien1.wav")
 
     def move(self):
         self.x += ALIEN_SPEED * self.__direction
@@ -92,6 +93,8 @@ class UFO(_Entity):
         self.__speed = UFO_SPEED
         self.__chance_to_appear = UFO_CHANCE_TO_APPEAR
         self.__is_active = False
+        self.__sound_channel = mixer.Channel(0)
+        self.__move_sfx = mixer.Sound("assets/sounds/ufo.wav")
 
     def activate(self):
         self.__is_active = True
@@ -103,7 +106,7 @@ class UFO(_Entity):
         return self.__is_active
 
     def move(self):
-        if self.__is_active:
+        if self.__is_active and not self._is_dead:
             self.x += self.__speed
             # Reset UFO position if it goes off the screen
             if self.x > SCREEN_SIZE[0]:
@@ -111,6 +114,10 @@ class UFO(_Entity):
                 self.deactivate()
                 
             self._body.topleft = (self.x + UFO_LEFT_PAD, self.y + UFO_TOP_PAD)
+            
+            if not self.__sound_channel.get_busy():
+                self.__sound_channel.play(self.__move_sfx)
+            
 
     def check_appearance(self):
         if not self.__is_active and random.random() <= self.__chance_to_appear:
@@ -125,7 +132,7 @@ class Player(_Entity):
         super().__init__(img_states, death_states, coordinates)
         self._body = pygame.Rect(self.x + PLAYER_BODY_LEFT_PAD, self.y + PLAYER_BODY_TOP_PAD,
                                  PLAYER_WIDTH, PLAYER_HEIGHT)
-        self.__death_sfx = mixer.Sound(r"assets\sounds\player_killed.wav")
+        self.__death_sfx = mixer.Sound("assets/sounds/player_killed.wav")
 
     def move_right(self):
         if self.in_right_bound():
@@ -165,7 +172,7 @@ class PlayerBullet(_Bullet):
                            PLAYER_BULLET_WIDTH, PLAYER_BULLET_HEIGHT)
         self.__speed = PLAYER_BULLET_SPEED
         self.is_active = False
-        self.__fire_sfx = mixer.Sound(r"assets\sounds\fire.wav")
+        self.__fire_sfx = mixer.Sound("assets/sounds/fire.wav")
 
     def move(self):
         if self.is_active:
