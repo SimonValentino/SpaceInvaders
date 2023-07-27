@@ -29,6 +29,17 @@ alien_bullet_states = [
 ]
 
 ufo_img = pygame.image.load("assets/icons/ufo.png")
+ufo_death_states = [
+    pygame.image.load("assets/icons/ufo_death_state1.png"),
+    pygame.image.load("assets/icons/ufo_death_state1.png"),
+    pygame.image.load("assets/icons/ufo_death_state1.png"),
+    pygame.image.load("assets/icons/ufo_death_state2.png"),
+    pygame.image.load("assets/icons/ufo_death_state2.png"),
+    pygame.image.load("assets/icons/ufo_death_state2.png"),
+    pygame.image.load("assets/icons/ufo_death_state3.png"),
+    pygame.image.load("assets/icons/ufo_death_state3.png"),
+    pygame.image.load("assets/icons/ufo_death_state3.png")
+]
 
 game_logo = pygame.image.load("assets/icons/game_logo.png")
 
@@ -91,7 +102,7 @@ def set_properties_based_off_level():
     alien_rows = define_alien_rows()
     alien_bullets = []
     
-    ufo = UFO(ufo_img, alien_death_states, INITIAL_UFO_COORDINATES)
+    ufo = UFO(ufo_img, ufo_death_states, INITIAL_UFO_COORDINATES)
 
     points_per_kill = BASE_POINTS_PER_KILL * level
     points_per_ufo_kill = BASE_POINTS_PER_UFO_KILL * level
@@ -149,7 +160,7 @@ player_bullet = PlayerBullet(player_bullet_img, (0, 0))
 alien_rows = define_alien_rows()
 alien_bullets = []
 
-ufo = UFO(ufo_img, alien_death_states, INITIAL_UFO_COORDINATES)
+ufo = UFO(ufo_img, ufo_death_states, INITIAL_UFO_COORDINATES)
 
 #   Game displays
 hud = Hud()
