@@ -1,6 +1,7 @@
 import pygame
 from pygame import mixer
 from constants import *
+import random
 
 mixer.init()
 
@@ -81,6 +82,42 @@ class Alien(_Entity):
     def kill(self):
         super().kill()
         self.__death_sfx.play()
+
+
+class UFO(_Entity):
+    def __init__(self, img_states, death_states, coordinates):
+        super().__init__(img_states, death_states, coordinates)
+        self._body = pygame.Rect(self.x + UFO_LEFT_PAD, self.y + UFO_TOP_PAD,
+                                 UFO_WIDTH, UFO_HEIGHT)
+        self.__speed = UFO_SPEED
+        self.__chance_to_appear = UFO_CHANCE_TO_APPEAR
+        self.__is_active = False
+
+    def activate(self):
+        self.__is_active = True
+
+    def deactivate(self):
+        self.__is_active = False
+
+    def is_active(self):
+        return self.__is_active
+
+    def move(self):
+        if self.__is_active:
+            self.x += self.__speed
+            # Reset UFO position if it goes off the screen
+            if self.x > SCREEN_SIZE[0]:
+                self.x = -UFO_WIDTH
+                self.deactivate()
+                
+            self._body.topleft = (self.x + UFO_LEFT_PAD, self.y + UFO_TOP_PAD)
+
+    def check_appearance(self):
+        if not self.__is_active and random.random() <= self.__chance_to_appear:
+            self.x = -UFO_WIDTH
+            self.y = SCORE_VALUE_COORDINATES[1] + UFO_TOP_PAD
+            self._body.topleft = (self.x + UFO_LEFT_PAD, self.y + UFO_TOP_PAD)
+            self.activate()
 
 
 class Player(_Entity):

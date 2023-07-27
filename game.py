@@ -1,6 +1,6 @@
 import pygame
 from constants import *
-from entities import Player, Alien, PlayerBullet, AlienBullet
+from entities import Player, Alien, PlayerBullet, AlienBullet, UFO
 from screen_displays import Hud, game_over_screen
 import random
 
@@ -53,12 +53,13 @@ def restart_level():
 
     hud.num_lives -= 1
     reset_player()
+    ufo.deactivate()
 
     set_properties_based_off_level()
 
 
 def display_game():
-    global alien_rows, player, bullet
+    global alien_rows, player, bullet, ufo
 
     player.display(screen)
 
@@ -73,12 +74,15 @@ def display_game():
         bullet.display(screen)
 
     hud.display(screen)
+    
+    if ufo.is_active():
+        ufo.display(screen)
 
     pygame.display.update()
 
 
 def set_properties_based_off_level():
-    global level, num_alien_rows, alien_moves_per_second, alien_chance_to_fire, alien_rows, alien_bullets, points_per_kill
+    global level, num_alien_rows, alien_moves_per_second, alien_chance_to_fire, alien_rows, alien_bullets, points_per_kill, points_per_ufo_kill, ufo
 
     num_alien_rows = BASE_NUM_ALIEN_ROWS + (level - 1) // NUM_LEVELS_TILL_NEW_ALIEN_ROW
     alien_moves_per_second = BASE_ALIEN_MOVES_PER_SECOND * ALIEN_LEVEL_BEATEN_MOVES_PER_SECOND_SCALE ** level
@@ -86,12 +90,15 @@ def set_properties_based_off_level():
 
     alien_rows = define_alien_rows()
     alien_bullets = []
+    
+    ufo = UFO(ufo_img, alien_death_states, INITIAL_UFO_COORDINATES)
 
     points_per_kill = BASE_POINTS_PER_KILL * level
+    points_per_ufo_kill = BASE_POINTS_PER_UFO_KILL * level
 
 
 def restart_game():
-    global hud, level, num_alien_rows, alien_moves_per_second, points_per_kill, alien_chance_to_fire, game_over
+    global hud, level, num_alien_rows, alien_moves_per_second, points_per_kill, alien_chance_to_fire, game_over, points_per_ufo_kill
 
     game_over = False
     level = 1
@@ -99,6 +106,7 @@ def restart_game():
     alien_moves_per_second = BASE_ALIEN_MOVES_PER_SECOND
     alien_chance_to_fire = BASE_ALIEN_CHANCE_TO_FIRE
     points_per_kill = BASE_POINTS_PER_KILL
+    points_per_ufo_kill = BASE_POINTS_PER_UFO_KILL
     hud = Hud()
 
     set_properties_based_off_level()
@@ -132,6 +140,7 @@ num_alien_rows = BASE_NUM_ALIEN_ROWS
 alien_moves_per_second = BASE_ALIEN_MOVES_PER_SECOND
 alien_chance_to_fire = BASE_ALIEN_CHANCE_TO_FIRE
 points_per_kill = BASE_POINTS_PER_KILL
+points_per_ufo_kill = BASE_POINTS_PER_UFO_KILL
 
 #   Entities
 player = Player(player_img, player_death_state, INITIAL_PLAYER_COORDINATES)
@@ -139,6 +148,8 @@ player_bullet = PlayerBullet(player_bullet_img, (0, 0))
 
 alien_rows = define_alien_rows()
 alien_bullets = []
+
+ufo = UFO(ufo_img, alien_death_states, INITIAL_UFO_COORDINATES)
 
 #   Game displays
 hud = Hud()
@@ -242,6 +253,10 @@ while run_game:
             display_game()
             pygame.time.wait(3_000)
             restart_level()
+    
+    # UFO move and update
+    ufo.check_appearance()
+    ufo.move()
 
     # Move and update the player bullet
     player_bullet.move()
@@ -255,6 +270,12 @@ while run_game:
                 player_bullet.is_active = False
                 alien.kill()
                 hud.score += points_per_kill
+    
+    # Collision detection between player bullet and UFO
+    if ufo.is_active() and player_bullet.is_active and player_bullet.collides_with(ufo):
+        player_bullet.is_active = False
+        ufo.kill()
+        hud.score += 1000
 
     # Check for alien invasion
     #   Finding last alien
