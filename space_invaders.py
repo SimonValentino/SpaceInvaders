@@ -57,6 +57,8 @@ pygame.display.set_icon(game_logo)
 
 # Functions
 def define_alien_rows():
+    global num_alien_rows
+    
     alien_x, alien_y = INITIAL_ALIEN_COORDINATES
     return [
         [Alien(alien_img_states[i % len(alien_img_states)], alien_death_states,
@@ -101,7 +103,8 @@ def display_game():
 def set_properties_based_off_level():
     global level, num_alien_rows, alien_moves_per_second, alien_chance_to_fire, alien_rows, alien_bullets, points_per_kill, points_per_ufo_kill, ufo
 
-    num_alien_rows = BASE_NUM_ALIEN_ROWS + (level - 1) // NUM_LEVELS_TILL_NEW_ALIEN_ROW
+    new_num_alien_rows = BASE_NUM_ALIEN_ROWS + (level - 1) // NUM_LEVELS_TILL_NEW_ALIEN_ROW
+    num_alien_rows = new_num_alien_rows if new_num_alien_rows <= MAX_NUM_ALIEN_ROWS else MAX_NUM_ALIEN_ROWS
     alien_moves_per_second = BASE_ALIEN_MOVES_PER_SECOND * ALIEN_LEVEL_BEATEN_MOVES_PER_SECOND_SCALE ** level
     alien_chance_to_fire *= ALIEN_CHANCE_TO_FIRE_SCALE
 
@@ -153,7 +156,7 @@ move_right = False
 game_over = False
 
 #   These variables will change based off the level number
-level = 1
+level = 6
 num_alien_rows = BASE_NUM_ALIEN_ROWS
 alien_moves_per_second = BASE_ALIEN_MOVES_PER_SECOND
 alien_chance_to_fire = BASE_ALIEN_CHANCE_TO_FIRE
