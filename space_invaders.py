@@ -156,7 +156,7 @@ move_right = False
 game_over = False
 
 #   These variables will change based off the level number
-level = 6
+level = 1
 num_alien_rows = BASE_NUM_ALIEN_ROWS
 alien_moves_per_second = BASE_ALIEN_MOVES_PER_SECOND
 alien_chance_to_fire = BASE_ALIEN_CHANCE_TO_FIRE
